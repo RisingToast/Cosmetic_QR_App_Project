@@ -19,25 +19,27 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       appBar: AppBar(
         title: const Text('QR 코드 스캔'),
         actions: [
+          // 토치(플래시) 버튼
           IconButton(
             color: Colors.white,
             icon: ValueListenableBuilder(
-              valueListenable: cameraController.torchState,
-              builder: (context, state, child) {
-                switch (state) {
-                  case TorchState.off:
-                    return const Icon(Icons.flash_off, color: Colors.grey);
-                  case TorchState.on:
-                    return const Icon(Icons.flash_on, color: Colors.yellow);
-                }
+              // 5.x 버전 API: torchState 대신 isTorchOn 사용 (ValueListenable)
+              valueListenable: cameraController.isTorchOn,
+              builder: (context, isTorchOn, child) {
+                return Icon(
+                  isTorchOn ? Icons.flash_on : Icons.flash_off,
+                  color: isTorchOn ? Colors.yellow : Colors.grey,
+                );
               },
             ),
             iconSize: 32.0,
             onPressed: () => cameraController.toggleTorch(),
           ),
+          // 카메라 전환 버튼
           IconButton(
             color: Colors.white,
             icon: ValueListenableBuilder(
+              // 5.x 버전 API: cameraFacingState 사용 (ValueListenable)
               valueListenable: cameraController.cameraFacingState,
               builder: (context, state, child) {
                 switch (state) {
@@ -45,6 +47,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     return const Icon(Icons.camera_front);
                   case CameraFacing.back:
                     return const Icon(Icons.camera_rear);
+                  default:
+                    return const Icon(Icons.camera_alt); // 기본값 처리
                 }
               },
             ),
@@ -65,7 +69,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               setState(() {
                 _isScanned = true;
               });
-              
+
               // 스캔 성공 시 다음 화면으로 이동
               Navigator.pushReplacement(
                 context,
@@ -79,7 +83,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       ),
     );
   }
-  
+
   @override
   void dispose() {
     cameraController.dispose();

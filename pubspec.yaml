@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.6
-  mobile_scanner: ^5.0.0 # QR 코드 스캔을 위한 패키지
+  mobile_scanner: ^6.0.0 # QR 코드 스캔을 위한 패키지
 
 dev_dependencies:
   flutter_test:
