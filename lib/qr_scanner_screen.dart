@@ -10,7 +10,7 @@ class QRScannerScreen extends StatefulWidget {
 }
 
 class _QRScannerScreenState extends State<QRScannerScreen> {
-  MobileScannerController cameraController = MobileScannerController();
+  final MobileScannerController cameraController = MobileScannerController();
   bool _isScanned = false;
 
   @override
@@ -19,58 +19,60 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       appBar: AppBar(
         title: const Text('QR 코드 스캔'),
         actions: [
-          // 토치(플래시) 버튼
+          // 플래시 버튼
           IconButton(
+            iconSize: 32,
             color: Colors.white,
             icon: ValueListenableBuilder(
-              // 5.x 버전 API: torchState 대신 isTorchOn 사용 (ValueListenable)
               valueListenable: cameraController.isTorchOn,
-              builder: (context, isTorchOn, child) {
+              builder: (context, isTorchOn, _) {
                 return Icon(
                   isTorchOn ? Icons.flash_on : Icons.flash_off,
                   color: isTorchOn ? Colors.yellow : Colors.grey,
                 );
               },
             ),
-            iconSize: 32.0,
-            onPressed: () => cameraController.toggleTorch(),
+            onPressed: () async => await cameraController.toggleTorch(),
           ),
+
           // 카메라 전환 버튼
           IconButton(
+            iconSize: 32,
             color: Colors.white,
             icon: ValueListenableBuilder(
-              // 5.x 버전 API: cameraFacingState 사용 (ValueListenable)
               valueListenable: cameraController.cameraFacingState,
-              builder: (context, state, child) {
+              builder: (context, state, _) {
                 switch (state) {
                   case CameraFacing.front:
                     return const Icon(Icons.camera_front);
                   case CameraFacing.back:
                     return const Icon(Icons.camera_rear);
                   default:
-                    return const Icon(Icons.camera_alt); // 기본값 처리
+                    return const Icon(Icons.camera_alt);
                 }
               },
             ),
-            iconSize: 32.0,
-            onPressed: () => cameraController.switchCamera(),
+            onPressed: () async => await cameraController.switchCamera(),
           ),
         ],
       ),
       body: MobileScanner(
         controller: cameraController,
-        onDetect: (capture) {
+        onDetect: (capture) async {
           if (_isScanned) return;
 
           final List<Barcode> barcodes = capture.barcodes;
           if (barcodes.isNotEmpty) {
             final String? code = barcodes.first.rawValue;
-            if (code != null) {
-              setState(() {
-                _isScanned = true;
-              });
 
-              // 스캔 성공 시 다음 화면으로 이동
+            if (code != null) {
+              setState(() => _isScanned = true);
+
+              // 스캔 즉시 카메라 중지 (중복 호출 방지)
+              await cameraController.stop();
+
+              if (!mounted) return;
+
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
