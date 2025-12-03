@@ -1,0 +1,3 @@
+This is a placeholder for a face image.
+In a real application, a transparent PNG of a face or a live camera feed would be used.
+The cosmetic color would be applied as an overlay on the lip or cheek area.
