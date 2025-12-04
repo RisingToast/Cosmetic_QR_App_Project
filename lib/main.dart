@@ -1,3 +1,4 @@
+import 'package:cosmetic_tryon_app/main_navigation_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cosmetic_tryon_app/qr_scanner_screen.dart';
 
@@ -15,7 +16,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const QRScannerScreen(),
+      home: const MainNavigationScreen(),
+
     );
   }
 }
